@@ -7,7 +7,8 @@ public class SpaceInvaders {
    
     public static void main(String[] args) {
         
-        new SpaceFrame();
+        SpaceFrame frame = new SpaceFrame();
+         frame.setVisible(true);
     }
     
 }
