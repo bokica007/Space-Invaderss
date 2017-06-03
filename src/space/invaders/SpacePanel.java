@@ -26,6 +26,8 @@ import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
       private Paint obstacle;
       private Timer timer;
       
+      //
+      
       
       
      public SpacePanel() {

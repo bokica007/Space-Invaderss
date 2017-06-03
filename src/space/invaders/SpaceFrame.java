@@ -12,6 +12,7 @@ public class SpaceFrame extends JFrame {
     public SpaceFrame(){
         
         SpacePanel panel = new SpacePanel();
+        //
         
         setSize(700,600); // Širina, dužina prozora
         setResizable(false); // Uklanjanje maximize dugmeta

@@ -9,6 +9,7 @@ public class SpaceInvaders {
         
         SpaceFrame frame = new SpaceFrame();
          frame.setVisible(true);
+         //
     }
     
 }
