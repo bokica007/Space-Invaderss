@@ -11,7 +11,9 @@ import java.awt.Graphics;
  public class Paint {
      private Rectangle2D.Double lowerRectangle;
      private int speedX =1;
+     /*
      
+     */
      private int x;
      private int y;
      private int WIDHT = 70;
