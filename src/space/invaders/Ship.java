@@ -1,28 +1,25 @@
 
 package space.invaders;
 
-
-import java.awt.Graphics;
- import java.awt.Graphics2D;
- import java.awt.RenderingHints;
  import java.awt.geom.Rectangle2D;
  
  
- public class Paint {
-     private Rectangle2D.Double lowerRectangle;
+ public class Ship {
+ private Rectangle2D.Double lowerRectangle;
+ 
      private int speedX =1;
-     /*//
      
-     */
      private int x;
      private int y;
-     private int WIDHT = 70;
-     private int HIGHT = 20;
+     private int WIDHT;
+     private int HIGHT;
      
         
-     public Paint(int x, int y) {
+      public Ship(int x, int y, int  WIDHT,int HIGHT ) {
          this.x = x;
          this.y = y;
+         this.WIDHT = WIDHT;
+         this.HIGHT = HIGHT;
          
          lowerRectangle = new Rectangle2D.Double(x, y, WIDHT, HIGHT);
      }
@@ -53,7 +50,8 @@ import java.awt.Graphics;
          x  -=20;
      }
      public void move1()
-     { if (getX() + getWIDHT() < 595)
+     { 
+         if (getX() + getWIDHT() < 595)
          x  +=20;
      }
  }
