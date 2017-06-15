@@ -3,17 +3,22 @@ package space.invaders;
 
 
 import java.awt.geom.Rectangle2D;
+ import java.awt.image.BufferedImage;
+ import java.io.File;
+ import java.io.IOException;
+ import javax.imageio.ImageIO;
  
  public class Wall {
      
      private Rectangle2D.Double lowerRectangle;
-     
+     static BufferedImage wallImage = null;
      private int x;
      private int y;
      private int WIDHT;
      private int HIGHT;
      private final int maxHits = 5;
      private int hitCount;
+     private boolean finished;
      
      public Wall(int x, int y, int  WIDHT,int HIGHT ) {
          
@@ -23,14 +28,13 @@ import java.awt.geom.Rectangle2D;
          this.HIGHT = HIGHT;
          hitCount = 0;
          lowerRectangle = new Rectangle2D.Double(x, y, WIDHT, HIGHT);
-         
+         finished = false;
      }
      
      public Rectangle2D.Double getLowerRectangle() {
          
-         lowerRectangle.x = x;
-         return lowerRectangle;
-         
+         lowerRectangle.x = x;        
+         return lowerRectangle; 
      }
  
      public int getWIDHT() {
@@ -49,13 +53,28 @@ import java.awt.geom.Rectangle2D;
          return y;
      }
  
-     public  boolean Hited(){
-         
-         hitCount++;     
+     public  void Hited(){
+             hitCount++;
          if(hitCount == maxHits)
-             
-         return true;
-         return false;
+             finished = true;
+      }
+     
+     public boolean isFinished() {
          
-     }    
+         return finished;
+     }
+     
+      public static void loadImages() {
+          try {
+             
+            wallImage = ImageIO.read(new File("src/images/wall.jpg"));
+            
+          } catch (IOException e) {
+              System.out.println(e);
+          }
+     }
+ 
+     public static BufferedImage getImage() {
+         return wallImage;
+     }
     }

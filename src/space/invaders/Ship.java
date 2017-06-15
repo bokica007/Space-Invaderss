@@ -2,6 +2,10 @@
 package space.invaders;
 
  import java.awt.geom.Rectangle2D;
+ import java.awt.image.BufferedImage;
+ import java.io.File;
+ import java.io.IOException;
+ import javax.imageio.ImageIO;
  
  
  public class Ship {
@@ -9,6 +13,7 @@ package space.invaders;
  
      private int speedX =1;
      
+     static BufferedImage shipImage = null;
      private int x;
      private int y;
      private int WIDHT;
@@ -54,4 +59,18 @@ package space.invaders;
          if (getX() + getWIDHT() < 595)
          x  +=20;
      }
+     
+    public static void loadImages() {
+         try {
+             shipImage = ImageIO.read(new File("src/images/ship.jpg"));
+         } catch (IOException e) {
+             System.out.println(e);
+         }
+     }
+  
+     public static BufferedImage getImage() {
+         return shipImage;
+     }
+     
+     
  }
