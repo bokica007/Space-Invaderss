@@ -53,10 +53,11 @@ import java.awt.geom.Rectangle2D;
          return y;
      }
  
-     public  void Hited(){
-             hitCount++;
-         if(hitCount == maxHits)
-             finished = true;
+     public void Hited() {
+         hitCount++;
+         if (hitCount == maxHits) {
+              finished = true;
+         }
       }
      
      public boolean isFinished() {
@@ -67,7 +68,7 @@ import java.awt.geom.Rectangle2D;
       public static void loadImages() {
           try {
              
-            wallImage = ImageIO.read(new File("src/images/wall.jpg"));
+            wallImage = ImageIO.read(new File("src/images/wall.png"));
             
           } catch (IOException e) {
               System.out.println(e);

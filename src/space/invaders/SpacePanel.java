@@ -11,59 +11,58 @@ package space.invaders;
  import java.awt.event.ActionListener;
  import java.awt.event.KeyEvent;
  import java.awt.event.KeyListener;
- import java.awt.geom.Rectangle2D;
  import javax.swing.JPanel;
  import javax.swing.Timer;
  import java.io.File;
  import java.io.IOException;
  import java.util.ArrayList;
  import javax.imageio.ImageIO;
+ import java.awt.FontMetrics;
+ import java.util.Random;
+ import java.awt.geom.Rectangle2D;
  
  
  public class SpacePanel extends JPanel implements  ActionListener, KeyListener {	 
  
       int frame;
-      private Font mainFont;
+      int score;
+      private final Font mainFont;
       private final int PANEL_HEIGHT = 400;
       private final int PANEL_WIDTH = 600;
       private Ship ship;
-      private Invaders[][] invaders = new Invaders[10][5];
-      private Wall[] walls = new Wall[3];
+      private final Invaders[][] invaders = new Invaders[10][5];
+      private final Wall[] walls = new Wall[3];
       private ArrayList<Missile> missiles;
-      private Timer timer;
+      private ArrayList<Missile> invaderMissiles;     
+      private final Timer timer;
       private boolean inGame;
+      private boolean finished;
+      private final Random random;
+      private int invaderMissileFrame;
       
       static Image backgroundImage;
       private final int BACKGROUND_WIDTH = 1000;
-      private int backgroundPosition;
+      private final int backgroundPosition;
       
       
      public SpacePanel() {
          mainFont = new Font("Ariel", Font.BOLD, 18);
-         inGame = false;
+         
          
          backgroundPosition = 0;
          loadImages();
-         missiles = new ArrayList<>();
+         
  
          setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
          setLayout(null);
          setBackground(Color.WHITE);
          setFocusable(true);
-         frame = 0;
-         timer = new Timer(30,this);        
+         
+         timer = new Timer(30,this);  
+         random = new Random();
          addKeyListener (this);
          
-         ship = new Ship((getPANEL_WIDTH()- 70)/2,getPANEL_HEIGHT()-20,70,20);
-         
-         for(int i = 0; i<10; i++)
-             for(int j = 0; j<5; j++)
-                 invaders[i][j] = new Invaders(i*30, j*30, 20, 20);
-         
-          walls[0] = new Wall((getPANEL_WIDTH()- 410)/2,getPANEL_HEIGHT() -150,70,80);
-          int x1 = walls[0].getX();
-          for(int k = 0; k<3; k++)
-          walls[k] = new Wall(x1+k*(walls[0].getWIDHT() +100),getPANEL_HEIGHT() -150,70,40);
+         restart();
           
      }
      
@@ -87,9 +86,9 @@ package space.invaders;
              setMoveSide(invaders[0][0].isSide());
              for(int i=0; i<10; i++)
                  for(int j = 0; j<5; j++)
-                     if(i==0 && j == 0)
-                         continue;
-                     else
+                     
+                     if(i==0 && j == 0) {
+             } else
                          invaders[i][j].move();
          }
          else
@@ -99,9 +98,9 @@ package space.invaders;
              setMoveSide(invaders[9][0].isSide());
              for(int i=0; i<10; i++)
                  for(int j = 0; j<5; j++)
-                     if(i==9 && j == 0)
-                         continue;
-                     else
+                     
+                     if(i==9 && j == 0) {
+             } else
                          invaders[i][j].move();
              if(temp!=moveSide)
                  invaders[9][0].move();
@@ -121,7 +120,7 @@ package space.invaders;
          for(int i = 0; i<10; i++)
             for(int j=0; j<5; j++)
                 
-                 if(!invaders[i][j].isHited())
+                 if(!invaders[i][j].isHit())
                      
                  {
                      g2d.draw(invaders[i][j].getLowerRectangle());
@@ -139,15 +138,46 @@ package space.invaders;
                drawWall(g2d, k);              
              }
              if(!missiles.isEmpty())
-              for(int i = 0; i< missiles.size(); i++)
-              {
-                  //g2d.draw(missiles.get(i).getLowerRectangle());
-                  g2d.drawImage(Wall.getImage(),missiles.get(i).getX(),missiles.get(i).getY(), missiles.get(i).getWIDHT(), missiles.get(i).getHIGHT(), null);
-              }
+              for (Missile missile : missiles) {
+                  
+             //g2d.draw(missiles.get(i).getLowerRectangle());
+                  g2d.drawImage(Wall.getImage(), missile.getX(), missile.getY(), missile.getWIDHT(), missile.getHIGHT(), null);
+         }
+             
+         if(!invaderMissiles.isEmpty())
+             for (Missile invaderMissile : invaderMissiles) {
+             //g2d.draw(missiles.get(i).getLowerRectangle());
+                 g2d.drawImage(Wall.getImage(), invaderMissile.getX(), invaderMissile.getY(), invaderMissile.getWIDHT(), invaderMissile.getHIGHT(), null);
+         }
+         drawScore(g2d);
+         if(finished)
+             drawMessage(g2d);
              
           }
      }
+     
+     private void drawScore(Graphics2D g2d) {
+             
+          g2d.setFont(mainFont);
+             
+         String message = "SCORE: " + score;
  
+         FontMetrics fontMetrics = g2d.getFontMetrics(mainFont);
+         int stringWidth = fontMetrics.stringWidth(message);
+ 
+         g2d.drawString(message, 0, PANEL_HEIGHT);
+     }
+     
+     private void drawMessage(Graphics2D g2d) {
+         g2d.setFont(mainFont);
+             
+         String message = "Game over: SCORE = " + score;
+ 
+         FontMetrics fontMetrics = g2d.getFontMetrics(mainFont);
+         int stringWidth = fontMetrics.stringWidth(message);
+ 
+          g2d.drawString(message, (PANEL_WIDTH - stringWidth) / 2, PANEL_HEIGHT/2);
+     }
      
      private void drawInvaders(Graphics2D g2d, int i, int j){
          
@@ -186,19 +216,32 @@ package space.invaders;
              moveMissile();
              if(frame%10 == 0)
              {
-                 moveInvaders();
-                 int k = hasMissileHitObstacle();
-                 if(k!=-1)
-                     missiles.remove(k);
+                 moveInvaders();                
+                
              }
-         if(gameOver())
-         {    
-             inGame = false;
-             if(!missiles.isEmpty())
-                 missiles.clear();
-             timer.stop();
+             
+         int k = hasMissileHitObstacle();
+             if(k!=-1)
+                 missiles.remove(k);
+             if(hasMissileHitShip() || aliensHitted()){
+                 gameOver();
+             }
+             
+         if(frame == invaderMissileFrame  && inGame)
+             
+         {
+             invaderMissileFrame = random.nextInt(100) + 100 + frame;
+             int i, j;
+             do
+             {
+                 i = random.nextInt(10);
+                 j = random.nextInt(5);
+                 System.out.println("i = " + i + " j = " + j + " hitted = " + invaders[i][j].isHit());
+             }while(invaders[i][j].isHit());
+             invaderMissiles.add(new Missile(invaders[i][j].getX(), invaders[i][j].getY()));
          }
-         repaint();
+         
+         repaint(); 
          }
          
        
@@ -215,6 +258,8 @@ package space.invaders;
         if(!inGame){
            inGame = true;
            timer.start();
+           if(finished)
+           restart();
        }
            if (e.getKeyCode() == KeyEvent.VK_LEFT)
              ship.move();
@@ -243,7 +288,7 @@ package space.invaders;
              Invaders.loadImages();
              Wall.loadImages();
              Ship.loadImages();
-             backgroundImage = ImageIO.read(new File("src/images/space.jpg"));
+             backgroundImage = ImageIO.read(new File("src/images/space.png"));
              
          }   catch (IOException e) {
              System.out.println(e);
@@ -266,8 +311,9 @@ package space.invaders;
                      for(int j = 0; j<5; j++)
                          if (invaders[i][j].getLowerRectangle().intersects(x, y, missiles.get(k).getWIDHT(), missiles.get(k).getHIGHT()))
                          {
-                             if(!invaders[i][j].isHited()){
-                                 invaders[i][j].setHited(true);
+                             if(!invaders[i][j].isHit()){
+                                 invaders[i][j].setHit(true);
+                                 updateScore(20);
                                  return k;
                              }
                          }
@@ -276,6 +322,7 @@ package space.invaders;
                      {
                          if(!walls[i].isFinished())
                          {    walls[i].Hited();
+                                 updateScore(2);
                              return k;
                          }
                      }
@@ -286,21 +333,75 @@ package space.invaders;
      private void moveMissile() {
          if(!missiles.isEmpty()){
          for(int i = 0; i< missiles.size(); i++)
-         {
-             missiles.get(i).move();
-             if(missiles.get(i).getY() < 0)
-                 missiles.remove(i);
+             {
+                 missiles.get(i).move();
+                 if(missiles.get(i).getY() < 0)
+                     missiles.remove(i);
+             }
+         }
+         if(!invaderMissiles.isEmpty()){
+             for(int i = 0; i<invaderMissiles.size(); i++){
+                 invaderMissiles.get(i).moveDown();
+                 if(invaderMissiles.get(i).getY() > PANEL_HEIGHT){
+                     System.out.println("nestao" + invaderMissiles.get(i).getY());
+                     invaderMissiles.remove(i);
+                 }
+             
+             
          }
      }
      }
      
-     private boolean gameOver(){
+     private boolean aliensHitted(){
          for(int i = 0; i<10; i++)
              for(int j = 0; j<5; j++)
-                 if(!invaders[i][j].isHited())
+                 if(!invaders[i][j].isHit())
                      return false;
          return true;
      }
      
+      private void updateScore(int point){
+         score += point;
+     }
      
+     private boolean hasMissileHitShip(){
+         
+         if(!invaderMissiles.isEmpty()){
+             for (Missile invaderMissile : invaderMissiles) {
+                 if (invaderMissile.getY() >= PANEL_HEIGHT - ship.getHIGHT() && invaderMissile.getY() <= PANEL_HEIGHT) {
+                     if (invaderMissile.getX() <= ship.getX() + ship.getWIDHT() && invaderMissile.getX() >= ship.getX()) {
+                         return true;
+                     }
+                 }
+             }
+         }
+         return false;
+     }
+     public void gameOver(){
+         if(!missiles.isEmpty())
+             missiles.clear();
+         if(!invaderMissiles.isEmpty())
+             invaderMissiles.clear();
+         timer.stop();
+         finished = true;
+         inGame = false;
+     }
+     public final void restart(){
+         frame = 0;
+         missiles = new ArrayList<>();
+         finished = false;
+         invaderMissiles = new ArrayList<>();
+         score = 0;
+         inGame = false;
+         ship = new Ship((getPANEL_WIDTH()- 70)/2,getPANEL_HEIGHT()-20,70,20);
+         for(int i = 0; i<10; i++)
+             for(int j = 0; j<5; j++)
+                 invaders[i][j] = new Invaders(i*30, j*30, 20, 20);
+          walls[0] = new Wall((getPANEL_WIDTH()- 410)/2,getPANEL_HEIGHT() -150,70,80);
+          int x1 = walls[0].getX();
+          for(int k = 0; k<3; k++)
+          walls[k] = new Wall(x1+k*(walls[0].getWIDHT() +100),getPANEL_HEIGHT() -150,70,40);
+          invaderMissileFrame = random.nextInt(165) + 330;
+          repaint();
+     }
  }

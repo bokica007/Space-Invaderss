@@ -11,7 +11,7 @@ package space.invaders;
  public class Ship {
  private Rectangle2D.Double lowerRectangle;
  
-     private int speedX =1;
+     private int speedX = 1;
      
      static BufferedImage shipImage = null;
      private int x;
@@ -49,20 +49,21 @@ package space.invaders;
          return y;
      }
      
-     public void move()
-     {
-         if (getX() > 5)
-         x  -=20;
+      public void move() {
+         if (getX() > 5) {
+             x -= 20;
+         }
      }
-     public void move1()
-     { 
-         if (getX() + getWIDHT() < 595)
-         x  +=20;
+ 
+     public void move1() {
+         if (getX() + getWIDHT() < 595) {
+             x += 20;
+         }
      }
      
     public static void loadImages() {
          try {
-             shipImage = ImageIO.read(new File("src/images/ship.jpg"));
+             shipImage = ImageIO.read(new File("src/images/ship.png"));
          } catch (IOException e) {
              System.out.println(e);
          }

@@ -10,7 +10,7 @@ package space.invaders;
   public class Missile {
       
      private Rectangle2D.Double lowerRectangle;
-     private int speedX =1;
+     private int speedX = 1;
      static BufferedImage missileImage = null;
      
      private int x;
@@ -52,7 +52,7 @@ package space.invaders;
          return y;
      }
  
-     public boolean isHited() {
+     public boolean isHit() {
          return hited;
      }
  
@@ -74,4 +74,9 @@ package space.invaders;
      {
         y -=2;
      }
+      
+     public void moveDown(){
+         y += 2;
+     }
+     
  }

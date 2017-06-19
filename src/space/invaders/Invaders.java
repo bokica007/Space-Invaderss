@@ -2,7 +2,7 @@
 package space.invaders;
 
 
-import java.awt.geom.Rectangle2D;
+ import java.awt.geom.Rectangle2D;
  import java.awt.image.BufferedImage;
  import java.io.File;
  import java.io.IOException;
@@ -11,7 +11,7 @@ import java.awt.geom.Rectangle2D;
  
  public class Invaders {
      private Rectangle2D.Double lowerRectangle;
-     private int speedX =1;
+     private int speedX = 1;
      
      static BufferedImage invaderImage = null;
      
@@ -51,7 +51,7 @@ import java.awt.geom.Rectangle2D;
          return y;
      }
  
-     public boolean isHited() {
+     public boolean isHit() {
          return hited;
      }
      
@@ -60,7 +60,7 @@ import java.awt.geom.Rectangle2D;
      }
      public static void loadImages() {
          try {
-             invaderImage = ImageIO.read(new File("src/images/alien.jpg"));
+             invaderImage = ImageIO.read(new File("src/images/alien.png"));
          } catch (IOException e) {
              System.out.println(e);
          }
@@ -74,26 +74,26 @@ import java.awt.geom.Rectangle2D;
          this.side = side;
      }
      
-      public void setHited(boolean hited) {
+      public void setHit(boolean hited) {
           
          this.hited = hited;
      }
      
-     public void move()
-     {
-         if(side){
-             if (getX() > 5)
-                 x -=20;
-             else
-                 side = false;
-         }
-         if(!side)
-         {
-             if (getX() + getWIDHT() < 595)
-             {
-                 x +=20;
-             }else
+    public void move() {
+         if (side) {
+             if (getX() > 5) {
+                 x -= 20;
+             } else {
+                  side = false;
+             }
+          }
+          if (!side) {
+             if (getX() + getWIDHT() < 595) {
+                 x += 20;
+             } else {
                  side = true;
          }
+       }
      }
- }
+   }
+ 
