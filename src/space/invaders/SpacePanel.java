@@ -30,12 +30,12 @@ package space.invaders;
       private final int PANEL_HEIGHT = 400;
       private final int PANEL_WIDTH = 600;
       private Ship ship;
-      private final Invaders[][] invaders = new Invaders[10][5];
+      private final Invaders[][] invaders = new Invaders[10][6];
       private final Wall[] walls = new Wall[3];
       private ArrayList<Missile> missiles;
       private ArrayList<Missile> invaderMissiles;     
       private final Timer timer;
-      private boolean inGame;
+      private static boolean inGame;
       private boolean finished;
       private final Random random;
       private int invaderMissileFrame;
@@ -60,16 +60,22 @@ package space.invaders;
          
          timer = new Timer(30,this);  
          random = new Random();
+         
+         inGame = false;
          addKeyListener (this);
          
          restart();
           
      }
      
+     public static boolean getInGame() {
+         return inGame;
+     }
+     
      private void setMoveSide(boolean side){
          
         for(int i=0; i<10; i++)
-             for(int j = 0; j<5; j++)
+             for(int j = 0; j<6; j++)
                   invaders[i][j].setSide(side);
                  
         
@@ -85,7 +91,7 @@ package space.invaders;
              invaders[0][0].move();
              setMoveSide(invaders[0][0].isSide());
              for(int i=0; i<10; i++)
-                 for(int j = 0; j<5; j++)
+                 for(int j = 0; j<6; j++)
                      
                      if(i==0 && j == 0) {
              } else
@@ -97,7 +103,7 @@ package space.invaders;
              temp = invaders[9][0].isSide();
              setMoveSide(invaders[9][0].isSide());
              for(int i=0; i<10; i++)
-                 for(int j = 0; j<5; j++)
+                 for(int j = 0; j<6; j++)
                      
                      if(i==9 && j == 0) {
              } else
@@ -118,7 +124,7 @@ package space.invaders;
          drawShip(g2d);
          
          for(int i = 0; i<10; i++)
-            for(int j=0; j<5; j++)
+            for(int j=0; j<6; j++)
                 
                  if(!invaders[i][j].isHit())
                      
@@ -140,14 +146,14 @@ package space.invaders;
              if(!missiles.isEmpty())
               for (Missile missile : missiles) {
                   
-             //g2d.draw(missiles.get(i).getLowerRectangle());
-                  g2d.drawImage(Wall.getImage(), missile.getX(), missile.getY(), missile.getWIDHT(), missile.getHIGHT(), null);
+                 g2d.drawImage(Missile.getImage(false), missile.getX(), missile.getY(), missile.getWIDHT(), missile.getHIGHT(), null);
+             
          }
              
          if(!invaderMissiles.isEmpty())
              for (Missile invaderMissile : invaderMissiles) {
-             //g2d.draw(missiles.get(i).getLowerRectangle());
-                 g2d.drawImage(Wall.getImage(), invaderMissile.getX(), invaderMissile.getY(), invaderMissile.getWIDHT(), invaderMissile.getHIGHT(), null);
+                 
+              g2d.drawImage(Missile.getImage(true), invaderMissile.getX(), invaderMissile.getY(), invaderMissile.getWIDHT(), invaderMissile.getHIGHT(), null);
          }
          drawScore(g2d);
          if(finished)
@@ -164,8 +170,9 @@ package space.invaders;
  
          FontMetrics fontMetrics = g2d.getFontMetrics(mainFont);
          int stringWidth = fontMetrics.stringWidth(message);
- 
-         g2d.drawString(message, 0, PANEL_HEIGHT);
+         g2d.setColor(Color.WHITE);
+         g2d.drawString(message, 0, PANEL_HEIGHT / 2 - 180);
+         
      }
      
      private void drawMessage(Graphics2D g2d) {
@@ -224,6 +231,7 @@ package space.invaders;
              if(k!=-1)
                  missiles.remove(k);
              if(hasMissileHitShip() || aliensHitted()){
+                 
                  gameOver();
              }
              
@@ -235,7 +243,7 @@ package space.invaders;
              do
              {
                  i = random.nextInt(10);
-                 j = random.nextInt(5);
+                 j = random.nextInt(6);
                  System.out.println("i = " + i + " j = " + j + " hitted = " + invaders[i][j].isHit());
              }while(invaders[i][j].isHit());
              invaderMissiles.add(new Missile(invaders[i][j].getX(), invaders[i][j].getY()));
@@ -262,10 +270,10 @@ package space.invaders;
            restart();
        }
            if (e.getKeyCode() == KeyEvent.VK_LEFT)
-             ship.move();
+             ship.moveLeft();
            
         else if (e.getKeyCode() == KeyEvent.VK_RIGHT)	   
-             ship.move1();
+             ship.moveRight();
         
            else if(e.getKeyCode() == KeyEvent.VK_SPACE)
              missiles.add(new Missile(ship.getX() + ship.getWIDHT()/2, ship.getY()));
@@ -288,6 +296,7 @@ package space.invaders;
              Invaders.loadImages();
              Wall.loadImages();
              Ship.loadImages();
+             Missile.loadImages();
              backgroundImage = ImageIO.read(new File("src/images/space.png"));
              
          }   catch (IOException e) {
@@ -308,7 +317,7 @@ package space.invaders;
                  x = missiles.get(k).getX();
                  y = missiles.get(k).getY();
                  for(int i=0; i<10; i++)
-                     for(int j = 0; j<5; j++)
+                     for(int j = 0; j<6; j++)
                          if (invaders[i][j].getLowerRectangle().intersects(x, y, missiles.get(k).getWIDHT(), missiles.get(k).getHIGHT()))
                          {
                              if(!invaders[i][j].isHit()){
@@ -354,7 +363,7 @@ package space.invaders;
      
      private boolean aliensHitted(){
          for(int i = 0; i<10; i++)
-             for(int j = 0; j<5; j++)
+             for(int j = 0; j<6; j++)
                  if(!invaders[i][j].isHit())
                      return false;
          return true;
@@ -395,7 +404,7 @@ package space.invaders;
          inGame = false;
          ship = new Ship((getPANEL_WIDTH()- 70)/2,getPANEL_HEIGHT()-20,70,20);
          for(int i = 0; i<10; i++)
-             for(int j = 0; j<5; j++)
+             for(int j = 0; j<6; j++)
                  invaders[i][j] = new Invaders(i*30, j*30, 20, 20);
           walls[0] = new Wall((getPANEL_WIDTH()- 410)/2,getPANEL_HEIGHT() -150,70,80);
           int x1 = walls[0].getX();
